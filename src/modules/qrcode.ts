@@ -14,6 +14,23 @@ import {
 } from '../types';
 
 /**
+ * 二维码请求数据接口
+ */
+interface QrCodeRequestData {
+  path?: string;
+  width?: number;
+  scene?: string;
+  page?: string;
+  auto_color?: boolean;
+  line_color?: {
+    r: string;
+    g: string;
+    b: string;
+  };
+  is_hyaline?: boolean;
+}
+
+/**
  * 二维码模块
  */
 export class QrCodeModule extends BaseSdk {
@@ -60,7 +77,7 @@ export class QrCodeModule extends BaseSdk {
   /**
    * 请求二维码API（处理二进制响应）
    */
-  private async requestQrCode(path: string, data: any): Promise<QrCodeResponse> {
+  private async requestQrCode(path: string, data: QrCodeRequestData): Promise<QrCodeResponse> {
     try {
       const token = await this.getAccessToken();
       const url = this.buildWechatApiUrl(path, {
@@ -68,7 +85,7 @@ export class QrCodeModule extends BaseSdk {
       });
 
       // 二维码API返回二进制数据，需要特殊处理
-      const response = await this.requestAdapter.request<any>({
+      const response = await this.requestAdapter.request<ArrayBuffer>({
         url,
         method: 'POST',
         data,
@@ -82,7 +99,8 @@ export class QrCodeModule extends BaseSdk {
       // 检查响应是否是JSON错误（微信API错误时返回JSON）
       try {
         // 尝试解析为JSON，如果成功说明是错误响应
-        const jsonResponse = JSON.parse(response.toString());
+        const buffer = Buffer.from(response);
+        const jsonResponse = JSON.parse(buffer.toString()) as unknown;
         if (jsonResponse && typeof jsonResponse === 'object' && 'errcode' in jsonResponse) {
           return jsonResponse as WechatApiResponse;
         }
@@ -92,7 +110,7 @@ export class QrCodeModule extends BaseSdk {
       }
 
       // 如果解析成功但不是错误响应，返回原始响应
-      return response;
+      return Buffer.from(response);
     } catch (error) {
       // 如果获取token失败或其他错误，返回错误响应
       return {
@@ -105,8 +123,13 @@ export class QrCodeModule extends BaseSdk {
   /**
    * 检查响应是否是错误响应
    */
-  private isErrorResponse(response: any): response is WechatApiResponse {
-    return response && typeof response === 'object' && 'errcode' in response;
+  private isErrorResponse(response: unknown): response is WechatApiResponse {
+    return (
+      response !== null &&
+      typeof response === 'object' &&
+      'errcode' in response &&
+      typeof (response as Record<string, unknown>).errcode === 'number'
+    );
   }
 
   /**
@@ -118,6 +141,9 @@ export class QrCodeModule extends BaseSdk {
     // 注意：这里需要实现文件保存逻辑
     // 由于Node.js环境需要fs模块，这里先返回占位实现
     this.debugLog('saveQrCodeToFile called', { bufferLength: buffer.length, filePath });
+    
+    // 模拟异步操作
+    await Promise.resolve();
     
     throw new Error('保存文件功能需要实现fs模块');
   }

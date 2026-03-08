@@ -44,7 +44,7 @@ export interface AccessTokenResponse extends WechatApiResponse {
  * 请求适配器接口
  */
 export interface RequestAdapter {
-  request<T = any>(options: RequestOptions): Promise<T>;
+  request<T>(options: RequestOptions): Promise<T>;
 }
 
 /**
@@ -56,9 +56,9 @@ export interface RequestOptions {
   /** 请求方法 */
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   /** 请求参数 */
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   /** 请求体数据 */
-  data?: any;
+  data?: unknown;
   /** 请求头 */
   headers?: Record<string, string>;
   /** 超时时间（毫秒） */

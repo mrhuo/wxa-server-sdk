@@ -9,8 +9,17 @@ import {
   RequestOptions,
   WxaSdkConfig,
   WechatApiResponse,
-  AccessTokenResponse,
 } from '../types';
+
+/**
+ * 访问令牌响应接口
+ */
+interface TokenResponse {
+  access_token?: string;
+  expires_in?: number;
+  errcode?: number;
+  errmsg?: string;
+}
 
 /**
  * 默认请求适配器（基于axios）
@@ -28,7 +37,7 @@ export class DefaultRequestAdapter implements RequestAdapter {
     });
   }
 
-  async request<T = any>(options: RequestOptions): Promise<T> {
+  async request<T>(options: RequestOptions): Promise<T> {
     const config: AxiosRequestConfig = {
       url: options.url,
       method: options.method,
@@ -68,7 +77,7 @@ export class BaseSdk {
   /**
    * 构建微信API URL
    */
-  protected buildWechatApiUrl(path: string, params?: Record<string, any>): string {
+  protected buildWechatApiUrl(path: string, params?: Record<string, unknown>): string {
     const baseUrl = 'https://api.weixin.qq.com';
     const url = new URL(path, baseUrl);
 
@@ -92,7 +101,7 @@ export class BaseSdk {
     
     // 检查响应是否是对象
     if (response && typeof response === 'object') {
-      const resp = response as any;
+      const resp = response as Record<string, unknown>;
       // 如果响应中包含errcode字段且不为0，表示有错误
       if ('errcode' in resp && resp.errcode !== 0) {
         // 直接返回原始错误响应，调用方需要检查errcode
@@ -109,7 +118,7 @@ export class BaseSdk {
   public async getAccessToken(): Promise<string> {
     // 检查令牌是否有效
     if (this.accessToken && this.tokenExpiresAt && Date.now() < this.tokenExpiresAt) {
-      return this.accessToken!;
+      return this.accessToken;
     }
 
     const url = this.buildWechatApiUrl('/cgi-bin/token', {
@@ -118,7 +127,7 @@ export class BaseSdk {
       secret: this.config.appSecret,
     });
 
-    const response = await this.requestAdapter.request<any>({
+    const response = await this.requestAdapter.request<TokenResponse>({
       url,
       method: 'GET',
     });
@@ -127,7 +136,7 @@ export class BaseSdk {
     this.checkWechatResponse(response);
 
     // 如果响应中包含errcode字段，表示有错误
-    if ('errcode' in response && response.errcode !== 0) {
+    if (response.errcode && response.errcode !== 0) {
       throw new Error(`获取访问令牌失败: ${response.errmsg || '未知错误'}`);
     }
 
@@ -137,7 +146,7 @@ export class BaseSdk {
       // 提前5分钟过期，避免边界情况
       const expiresIn = response.expires_in || 7200;
       this.tokenExpiresAt = Date.now() + (expiresIn - 300) * 1000;
-      return this.accessToken!;
+      return this.accessToken;
     }
 
     throw new Error('获取访问令牌失败: 响应格式错误');
@@ -146,7 +155,7 @@ export class BaseSdk {
   /**
    * 带访问令牌的请求
    */
-  protected async requestWithToken<T extends WechatApiResponse = any>(
+  protected async requestWithToken<T extends WechatApiResponse>(
     options: Omit<RequestOptions, 'url'> & { path: string }
   ): Promise<T> {
     try {
@@ -173,7 +182,7 @@ export class BaseSdk {
   /**
    * 不带访问令牌的请求（用于code2Session等接口）
    */
-  protected async requestWithoutToken<T extends WechatApiResponse = any>(
+  protected async requestWithoutToken<T extends WechatApiResponse>(
     options: Omit<RequestOptions, 'url'> & { path: string }
   ): Promise<T> {
     const url = this.buildWechatApiUrl(options.path);
@@ -189,8 +198,9 @@ export class BaseSdk {
   /**
    * 调试日志
    */
-  protected debugLog(...args: any[]): void {
+  protected debugLog(...args: unknown[]): void {
     if (this.config.debug) {
+      // eslint-disable-next-line no-console
       console.log('[WXA-SDK]', ...args);
     }
   }

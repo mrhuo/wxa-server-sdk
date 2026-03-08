@@ -17,8 +17,57 @@ import {
   GenerateUrlLinkResponse,
   GenerateShortLinkParams,
   GenerateShortLinkResponse,
-  WechatApiResponse,
 } from '../types';
+
+/**
+ * Scheme请求数据接口
+ */
+interface SchemeRequestData {
+  jump_wxa?: {
+    path: string;
+    query: string;
+    env_version: string;
+  };
+  is_expire?: boolean;
+  expire_time?: number;
+  expire_type?: number;
+  expire_interval?: number;
+  nfc_scheme_param?: {
+    scene: string;
+    out_trade_no: string;
+    total_fee: number;
+    fee_type: string;
+    time_end: number;
+  };
+}
+
+/**
+ * URL Link请求数据接口
+ */
+interface UrlLinkRequestData {
+  path?: string;
+  query?: string;
+  env_version?: string;
+  expire_type?: number;
+  expire_time?: number;
+  expire_interval?: number;
+  cloud_base?: {
+    env: string;
+    domain?: string;
+    path?: string;
+    query?: string;
+    resource_appid?: string;
+  };
+}
+
+/**
+ * 短链请求数据接口
+ */
+interface ShortLinkRequestData {
+  page_url: string;
+  page_title: string;
+  is_permanent?: boolean;
+}
 
 /**
  * URL Scheme模块
@@ -71,7 +120,7 @@ export class UrlSchemeModule extends BaseSdk {
       });
 
       // 构建请求数据
-      const requestData: any = {};
+      const requestData: SchemeRequestData = {};
 
       if (params.jump_wxa) {
         requestData.jump_wxa = {
@@ -130,7 +179,7 @@ export class UrlSchemeModule extends BaseSdk {
       });
 
       // 构建请求数据
-      const requestData: any = {};
+      const requestData: SchemeRequestData = {};
 
       if (params.jump_wxa) {
         requestData.jump_wxa = {
@@ -233,7 +282,7 @@ export class UrlSchemeModule extends BaseSdk {
       });
 
       // 构建请求数据
-      const requestData: any = {};
+      const requestData: UrlLinkRequestData = {};
 
       if (params.path !== undefined) {
         requestData.path = params.path;
@@ -314,7 +363,7 @@ export class UrlSchemeModule extends BaseSdk {
       });
 
       // 构建请求数据
-      const requestData: any = {
+      const requestData: ShortLinkRequestData = {
         page_url: params.page_url,
         page_title: params.page_title,
       };
