@@ -1,5 +1,6 @@
 /**
  * 二维码模块
+ * @author mrhuo (https://github.com/mrhuo)
  */
 
 import { BaseSdk } from '../core';

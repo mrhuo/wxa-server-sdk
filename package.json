@@ -20,16 +20,16 @@
     "server",
     "api"
   ],
-  "author": "Your Name",
+  "author": "mrhuo",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/wxa-server-sdk.git"
+    "url": "https://github.com/mrhuo/wxa-server-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/wxa-server-sdk/issues"
+    "url": "https://github.com/mrhuo/wxa-server-sdk/issues"
   },
-  "homepage": "https://github.com/yourusername/wxa-server-sdk#readme",
+  "homepage": "https://github.com/mrhuo/wxa-server-sdk#readme",
   "dependencies": {
     "axios": "^1.6.0",
     "form-data": "^4.0.0"

@@ -1,5 +1,6 @@
 /**
  * 微信小程序服务端SDK类型定义
+ * @author mrhuo (https://github.com/mrhuo)
  */
 
 /**

@@ -1,5 +1,6 @@
 /**
  * 微信小程序服务端SDK主入口
+ * @author mrhuo (https://github.com/mrhuo)
  */
 
 import { WxaSdkConfig } from './types';

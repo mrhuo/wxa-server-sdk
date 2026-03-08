@@ -1,5 +1,6 @@
 /**
  * 核心模块 - 基础SDK类和请求适配器
+ * @author mrhuo (https://github.com/mrhuo)
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';

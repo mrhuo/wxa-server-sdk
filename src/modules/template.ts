@@ -1,5 +1,6 @@
 /**
  * 模板消息模块
+ * @author mrhuo (https://github.com/mrhuo)
  */
 
 import { BaseSdk } from '../core';
